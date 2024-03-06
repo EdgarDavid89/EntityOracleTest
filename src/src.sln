@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{72F5BA2D-1DF1-4243-8645-19CFB84CAD87}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Parkings", "Parkings\Parkings.csproj", "{0A431757-3985-4156-8210-84221020C9F4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{72F5BA2D-1DF1-4243-8645-19CFB84CAD87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72F5BA2D-1DF1-4243-8645-19CFB84CAD87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72F5BA2D-1DF1-4243-8645-19CFB84CAD87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72F5BA2D-1DF1-4243-8645-19CFB84CAD87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A431757-3985-4156-8210-84221020C9F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A431757-3985-4156-8210-84221020C9F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A431757-3985-4156-8210-84221020C9F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A431757-3985-4156-8210-84221020C9F4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF7678DD-5E2F-4620-845C-53E54CF0DC65}
+	EndGlobalSection
+EndGlobal
