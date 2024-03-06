@@ -11,7 +11,6 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-Console.WriteLine($"Connection string: {connectionString}");
 builder.Services.AddDbContext<ModelContext>(x => x.UseOracle(connectionString, 
 options => options.UseOracleSQLCompatibility("11"))
 );

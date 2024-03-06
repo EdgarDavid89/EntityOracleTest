@@ -19,10 +19,6 @@ namespace DataAccess.Models
         public virtual DbSet<Parking> Parkings { get; set; } = null!;
         public virtual DbSet<Worker> Workers { get; set; } = null!;
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
