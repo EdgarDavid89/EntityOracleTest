@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Models;
+using DataAccess.Business;
+using DataAccess.DTO;
 
 namespace Parkings.Controllers
 {
@@ -12,10 +14,13 @@ namespace Parkings.Controllers
     public class WorkersController : ControllerBase
     {
         private readonly ModelContext _context;
+        private readonly IWorkerB _workerB;
 
-        public WorkersController(ModelContext context)
+        public WorkersController(ModelContext context,
+        IWorkerB workerB)
         {
             _context = context;
+            _workerB = workerB;
         }
 
         // GET: api/Workers
@@ -27,9 +32,9 @@ namespace Parkings.Controllers
 
         // GET: api/Workers/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Worker>> GetWorker(decimal id)
+        public async Task<ActionResult<WorkerDto>> GetWorker(decimal id)
         {
-            var worker = await _context.Workers.FindAsync(id);
+            var worker = await _workerB.GetWorker(id);
 
             if (worker == null)
             {
