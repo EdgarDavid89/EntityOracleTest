@@ -1,4 +1,5 @@
 using System;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace DataAccess.DTO
 {

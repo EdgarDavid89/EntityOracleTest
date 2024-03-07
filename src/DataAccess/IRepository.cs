@@ -8,12 +8,12 @@ namespace DataAccess
 
         Task<TEntity?> GetByIdAsync(TId Id);
 
-        Task<TEntity> UpdateAsync(TEntity entity);
+        Task<TEntity> UpdateAsync(TEntity entity, TId id);
 
         Task<TEntity> DeleteAsync(TId Id);
 
-        Task<IQueryable<TEntity>> GetAllAsync();
-
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        
         Task<IEnumerable<TEntity>> GetByFilterAsync(Expression<Func<TEntity, bool>> filter);
 
     }

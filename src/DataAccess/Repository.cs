@@ -29,24 +29,33 @@ namespace DataAccess
             return await _dbSet.FindAsync(Id);
         }
 
-        public async Task<TEntity> UpdateAsync(TEntity entity)
+        public async Task<TEntity> UpdateAsync(TEntity entity, TId id)
         {
-            _dbSet.Update(entity);
+            var entityExist = await _dbSet.FindAsync(id);
+            if(entityExist == null)
+            {
+                throw new DbUpdateConcurrencyException("Entity not found");
+            }
+            _context.Entry(entityExist).CurrentValues.SetValues(entity);
             await _context.SaveChangesAsync();
             return entity;
         }
 
         public async Task<TEntity> DeleteAsync(TId Id)
         {
-            var entity = await _dbSet.FindAsync(Id);
-            _dbSet.Remove(entity);
+            var entityExist = await _dbSet.FindAsync(Id);
+            if(entityExist == null)
+            {
+                throw new DbUpdateConcurrencyException("Entity not found");
+            }
+            _dbSet.Remove(entityExist);
             await _context.SaveChangesAsync();
-            return entity;
+            return entityExist;
         }
 
-        public async Task<IQueryable<TEntity>> GetAllAsync()
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return _dbSet.AsQueryable();
+            return await _dbSet.ToListAsync();
         }
 
         public async Task<IEnumerable<TEntity>> GetByFilterAsync(Expression<Func<TEntity, bool>> filter)

@@ -1,8 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DataAccess.Models;
 using DataAccess.Business;
 using DataAccess.DTO;
@@ -13,28 +9,29 @@ namespace Parkings.Controllers
     [ApiController]
     public class WorkersController : ControllerBase
     {
-        private readonly ModelContext _context;
-        private readonly IWorkerB _workerB;
+        private readonly IWorkerB<decimal> _workerB;
+        private readonly ILogger<WorkersController> _logger;
 
-        public WorkersController(ModelContext context,
-        IWorkerB workerB)
+        public WorkersController(IWorkerB<decimal> workerB, 
+        ILogger<WorkersController> logger)
         {
-            _context = context;
             _workerB = workerB;
+            _logger = logger;
         }
 
         // GET: api/Workers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Worker>>> GetWorkers()
+        public async Task<ActionResult<IEnumerable<WorkerDto>>> GetWorkers()
         {
-            return await _context.Workers.ToListAsync();
+            var result = await _workerB.GetWorkers();
+            return Ok(result);
         }
 
         // GET: api/Workers/5
         [HttpGet("{id}")]
         public async Task<ActionResult<WorkerDto>> GetWorker(decimal id)
         {
-            var worker = await _workerB.GetWorker(id);
+            var worker = await _workerB.GetWorkerById(id);
 
             if (worker == null)
             {
@@ -46,39 +43,29 @@ namespace Parkings.Controllers
 
         // POST: api/Workers
         [HttpPost]
-        public async Task<ActionResult<Worker>> CreateWorker(Worker worker)
+        public async Task<ActionResult<WorkerDto>> CreateWorker(WorkerDto worker)
         {
-            _context.Workers.Add(worker);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetWorker), new { id = worker.Id }, worker);
+            var result = await _workerB.CreateWorker(worker);
+            return CreatedAtAction(nameof(GetWorker), new { id = result.Id }, result);
         }
 
         // PUT: api/Workers/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateWorker(decimal id, Worker worker)
+        public async Task<IActionResult> UpdateWorker(decimal id, WorkerDto worker)
         {
             if (id != worker.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(worker).State = EntityState.Modified;
-
             try
             {
-                await _context.SaveChangesAsync();
+                var result = await _workerB.UpdateWorker(worker, id);
+                _logger.LogInformation($"Worker with id {result.Id} was updated");
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!WorkerExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound(ex.Message);
             }
 
             return NoContent();
@@ -86,24 +73,20 @@ namespace Parkings.Controllers
 
         // DELETE: api/Workers/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteWorker(int id)
+        public async Task<IActionResult> DeleteWorker(decimal id)
         {
-            var worker = await _context.Workers.FindAsync(id);
-            if (worker == null)
+            try
             {
-                return NotFound();
+                var result =  await _workerB.DeleteWorker(id);
+                _logger.LogInformation($"Worker with id {result.Id} was deleted");
             }
-
-            _context.Workers.Remove(worker);
-            await _context.SaveChangesAsync();
-
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
             return NoContent();
         }
 
 
-        private bool WorkerExists(decimal id)
-        {
-            return _context.Workers.Any(e => e.Id == id);
-        }
     }
 }
