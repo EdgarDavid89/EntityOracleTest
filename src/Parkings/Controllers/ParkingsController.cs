@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
+using DataAccess.Business;
+using DataAccess.DTO;
 
 namespace Parkings.Controllers
 {
@@ -12,19 +15,23 @@ namespace Parkings.Controllers
     public class ParkingsController : ControllerBase
     {
         private readonly ModelContext _context;
+        private readonly IParkingB<decimal> _parkingB;
 
-        public ParkingsController(ModelContext context)
+        public ParkingsController(ModelContext context,
+        IParkingB<decimal> parkingB)
         {
             _context = context;
+            _parkingB = parkingB;
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Parking>>> GetParkings()
+        public async Task<ActionResult<IEnumerable<ParkingDto>>> GetParkings()
         {
             try
             {
-                return await _context.Parkings.ToListAsync();
+                var result = await _parkingB.GetParkings();
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -33,9 +40,9 @@ namespace Parkings.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Parking>> GetParking(decimal id)
+        public async Task<ActionResult<ParkingDto>> GetParking(decimal id)
         {
-            var parking = await _context.Parkings.FindAsync(id);
+            var parking = await _parkingB.GetParkingById(id);
 
             if (parking == null)
             {

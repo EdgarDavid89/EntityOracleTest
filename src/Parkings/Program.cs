@@ -20,6 +20,8 @@ builder.Services.AddSwaggerGen(c =>{
 builder.Services.AddAutoMapper(typeof(MappingProfileDB));
 builder.Services.AddScoped<IWorkerB<decimal>, WorkerB<decimal>>();
 builder.Services.AddScoped<IRepository<Worker, decimal>, Repository<Worker, decimal>>();
+builder.Services.AddScoped<IParkingB<decimal>, ParkingB<decimal>>();
+builder.Services.AddScoped<IRepository<Parking, decimal>, Repository<Parking, decimal>>();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ModelContext>(x => x.UseOracle(connectionString, 
