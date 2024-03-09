@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using DataAccess.Models;
 using DataAccess.Business;
 using DataAccess.DTO;
+using System.ComponentModel.DataAnnotations;
+using Oracle.ManagedDataAccess.Client;
 
 namespace Parkings.Controllers
 {
@@ -12,7 +14,7 @@ namespace Parkings.Controllers
         private readonly IWorkerB _workerB;
         private readonly ILogger<WorkersController> _logger;
 
-        public WorkersController(IWorkerB workerB, 
+        public WorkersController(IWorkerB workerB,
         ILogger<WorkersController> logger)
         {
             _workerB = workerB;
@@ -45,14 +47,35 @@ namespace Parkings.Controllers
         [HttpPost]
         public async Task<ActionResult<WorkerDto>> CreateWorker(WorkerDto worker)
         {
-            var result = await _workerB.CreateWorker(worker);
-            return CreatedAtAction(nameof(GetWorker), new { id = result.Id }, result);
+            var context = new ValidationContext(worker);
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(worker, context, results, true))
+            {
+                return BadRequest(results.Select(r => r.ErrorMessage));
+            }
+
+            try
+            {
+                var result = await _workerB.CreateWorker(worker);
+                return CreatedAtAction(nameof(GetWorker), new { id = result.Id }, result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message + Environment.NewLine + ex.InnerException?.Message);
+            }
         }
 
         // PUT: api/Workers/5
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateWorker(decimal id, WorkerDto worker)
         {
+            var context = new ValidationContext(worker);
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(worker, context, results, true))
+            {
+                return BadRequest(results.Select(r => r.ErrorMessage));
+            }
+
             if (id != worker.Id)
             {
                 return BadRequest();
@@ -65,7 +88,7 @@ namespace Parkings.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message + Environment.NewLine + ex.InnerException?.Message);
             }
 
             return NoContent();
@@ -77,7 +100,7 @@ namespace Parkings.Controllers
         {
             try
             {
-                var result =  await _workerB.DeleteWorker(id);
+                var result = await _workerB.DeleteWorker(id);
                 _logger.LogInformation($"Worker with id {result.Id} was deleted");
             }
             catch (Exception ex)

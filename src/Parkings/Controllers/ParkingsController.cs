@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using DataAccess.Business;
 using DataAccess.DTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace Parkings.Controllers
 {
@@ -46,16 +47,23 @@ namespace Parkings.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateParking(ParkingDto parking)
         {
-            var parkingEntity = await _parkingB.CreateParking(parking);
+            var context = new ValidationContext(parking);
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(parking, context, results, true))
+            {
+                return BadRequest(results.Select(r => r.ErrorMessage));
+            }
 
-            return CreatedAtAction(nameof(GetParking), new { id = parking.Id }, parking);
+            var parkingSaved = await _parkingB.CreateParking(parking);
+
+            return CreatedAtAction(nameof(GetParking), new { id = parkingSaved.Id }, parkingSaved);
         }
 
-        
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParking(decimal id)
-        { 
+        {
             try
             {
                 var parking = await _parkingB.DeleteParking(id);
@@ -64,16 +72,16 @@ namespace Parkings.Controllers
             {
                 return BadRequest(ex.Message);
             }
- 
+
             return NoContent();
         }
-        
+
         [HttpGet("{parkingId}/workers")]
         public async Task<ActionResult> GetWorkeByParking(decimal parkingId)
         {
             try
             {
-                if(parkingId <= 0)
+                if (parkingId <= 0)
                     return BadRequest("Invalid parking id");
 
                 var workers = await _parkingB.GetWorkersByParking(parkingId);
@@ -88,10 +96,17 @@ namespace Parkings.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateParking(decimal id, ParkingDto parking)
         {
+            var context = new ValidationContext(parking);
+            var results = new List<ValidationResult>();
+            if (!Validator.TryValidateObject(parking, context, results, true))
+            {
+                return BadRequest(results.Select(r => r.ErrorMessage));
+            }
+
             if (id != parking.Id)
             {
                 return BadRequest();
@@ -102,7 +117,7 @@ namespace Parkings.Controllers
             }
             catch (Exception ex)
             {
-                return NotFound(ex.Message);
+                return BadRequest(ex.Message);
             }
 
             return NoContent();

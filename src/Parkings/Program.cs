@@ -30,6 +30,11 @@ builder.Services.AddDbContext<ModelContext>(x => x.UseOracle(connectionString,
 options => options.UseOracleSQLCompatibility("11"))
 );
 
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
