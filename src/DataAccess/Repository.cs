@@ -6,7 +6,7 @@ using DataAccess.Models;
 
 namespace DataAccess
 {
-    public class Repository<TEntity, TId> : IRepository<TEntity, TId> where TEntity : class 
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class 
     {
         private readonly ModelContext _context;
         private readonly DbSet<TEntity> _dbSet;
@@ -24,12 +24,12 @@ namespace DataAccess
             return entity;
         }
 
-        public async Task<TEntity?> GetByIdAsync(TId Id)
+        public async Task<TEntity?> GetByIdAsync<TId>(TId Id)
         {
             return await _dbSet.FindAsync(Id);
         }
 
-        public async Task<TEntity> UpdateAsync(TEntity entity, TId id)
+        public async Task<TEntity> UpdateAsync<TId>(TEntity entity, TId id)
         {
             var entityExist = await _dbSet.FindAsync(id);
             if(entityExist == null)
@@ -41,7 +41,7 @@ namespace DataAccess
             return entity;
         }
 
-        public async Task<TEntity> DeleteAsync(TId Id)
+        public async Task<TEntity> DeleteAsync<TId>(TId Id)
         {
             var entityExist = await _dbSet.FindAsync(Id);
             if(entityExist == null)

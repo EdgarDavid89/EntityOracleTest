@@ -2,15 +2,15 @@ using System.Linq.Expressions;
 
 namespace DataAccess
 {
-    public interface IRepository<TEntity, TId> where TEntity : class
+    public interface IRepository<TEntity> where TEntity : class
     {
         Task<TEntity> InsertAsync(TEntity entity);
 
-        Task<TEntity?> GetByIdAsync(TId Id);
+        Task<TEntity?> GetByIdAsync<TId>(TId Id);
 
-        Task<TEntity> UpdateAsync(TEntity entity, TId id);
+        Task<TEntity> UpdateAsync<TId>(TEntity entity, TId id);
 
-        Task<TEntity> DeleteAsync(TId Id);
+        Task<TEntity> DeleteAsync<TId>(TId Id);
 
         Task<IEnumerable<TEntity>> GetAllAsync();
         

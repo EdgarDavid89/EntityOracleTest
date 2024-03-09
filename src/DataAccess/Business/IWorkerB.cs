@@ -4,12 +4,12 @@ using DataAccess.DTO;
 
 namespace DataAccess.Business
 {
-    public interface IWorkerB<TId>
+    public interface IWorkerB
     {
-        Task<WorkerDto> GetWorkerById(TId id);
+        Task<WorkerDto> GetWorkerById<TId>(TId id);
         Task<IEnumerable<WorkerDto>> GetWorkers();
         Task<WorkerDto> CreateWorker(WorkerDto worker);
-        Task<WorkerDto> UpdateWorker(WorkerDto worker, TId id);
-        Task<WorkerDto> DeleteWorker(TId id);
+        Task<WorkerDto> UpdateWorker<TId>(WorkerDto worker, TId id);
+        Task<WorkerDto> DeleteWorker<TId>(TId id);
     }
 }

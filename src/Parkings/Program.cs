@@ -4,6 +4,8 @@ using DataAccess.Maper;
 using DataAccess.Business;
 using DataAccess;
 using Parkings;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,10 +20,10 @@ builder.Services.AddSwaggerGen(c =>{
 
 });
 builder.Services.AddAutoMapper(typeof(MappingProfileDB));
-builder.Services.AddScoped<IWorkerB<decimal>, WorkerB<decimal>>();
-builder.Services.AddScoped<IRepository<Worker, decimal>, Repository<Worker, decimal>>();
-builder.Services.AddScoped<IParkingB<decimal>, ParkingB<decimal>>();
-builder.Services.AddScoped<IRepository<Parking, decimal>, Repository<Parking, decimal>>();
+builder.Services.AddScoped<IWorkerB, WorkerB>();
+builder.Services.AddScoped<IRepository<Worker>, Repository<Worker>>();
+builder.Services.AddScoped<IParkingB, ParkingB>();
+builder.Services.AddScoped<IRepository<Parking>, Repository<Parking>>();
 
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ModelContext>(x => x.UseOracle(connectionString, 

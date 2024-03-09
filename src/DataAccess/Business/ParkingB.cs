@@ -3,13 +3,13 @@ using AutoMapper;
 using DataAccess.Models;
 namespace DataAccess.Business
 {
-    public class ParkingB<TId> : IParkingB<TId>
+    public class ParkingB : IParkingB
     {
-        private readonly IRepository<Parking, TId> _parkingRepository;
-        private readonly IRepository<Worker, TId> _workerRepository;
+        private readonly IRepository<Parking> _parkingRepository;
+        private readonly IRepository<Worker> _workerRepository;
         private readonly IMapper _mapper;
-        public ParkingB(IRepository<Parking, TId> parkingRepository,
-        IRepository<Worker, TId> workerRepository,
+        public ParkingB(IRepository<Parking> parkingRepository,
+        IRepository<Worker> workerRepository,
           IMapper mapper)
         {
             _parkingRepository = parkingRepository;
@@ -17,36 +17,46 @@ namespace DataAccess.Business
             _workerRepository = workerRepository;
         }
 
-        public async Task<ParkingDto> CreateParking(WorkerDto worker)
+        public async Task<IEnumerable<ParkingDto>> GetParkings()
         {
-            throw new NotImplementedException();
+            var parkings = await _parkingRepository.GetAllAsync();
+            return _mapper.Map<IEnumerable<ParkingDto>>(parkings);
         }
 
-        public async Task<ParkingDto> DeleteParking(TId id)
+        public async Task<ParkingDto> CreateParking(ParkingDto parking)
         {
-            throw new NotImplementedException();
+            parking.Id = parking.Id > 0 || parking.Id < 0  ? 0: parking.Id;
+            var parkingEntity = _mapper.Map<Parking>(parking);
+            var newParking = await _parkingRepository.InsertAsync(parkingEntity);
+            return _mapper.Map<ParkingDto>(newParking);
         }
 
-        public async Task<ParkingDto> GetParkingById(TId id)
+        public async Task<ParkingDto> DeleteParking<TId>(TId id)
+        {
+            var deletedParking = await _parkingRepository.DeleteAsync(id);
+            return _mapper.Map<ParkingDto>(deletedParking);
+        }
+
+        public async Task<ParkingDto> GetParkingById<TId>(TId id)
         {
             var parking = await _parkingRepository.GetByIdAsync(id);
-            if(parking != null)
-            {
-                 var workers = await _workerRepository.GetByFilterAsync(w => w.Parkingid == parking.Id);
-                 parking.Workers = workers.ToList(); 
-            }
             return _mapper.Map<ParkingDto>(parking);
         }
 
-        public async Task<IEnumerable<ParkingDto>> GetParkings()
+        public async Task<ParkingDto> UpdateParking<TId>(ParkingDto parking, TId id)
         {
-            var parking = await _parkingRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<ParkingDto>>(parking);
+            var parkingUpdate = _mapper.Map<Parking>(parking);
+            var updatedParking = await _parkingRepository.UpdateAsync(parkingUpdate, id);
+            return _mapper.Map<ParkingDto>(updatedParking);
         }
 
-        public async Task<ParkingDto> UpdateParking(WorkerDto worker, TId id)
+        public async Task<IEnumerable<WorkerDto>> GetWorkersByParking<TId>(TId id)
         {
-            throw new NotImplementedException();
+            var workers = await _workerRepository.GetByFilterAsync(w => w.Parkingid == Convert.ToDecimal(id));
+            return _mapper.Map<IEnumerable<WorkerDto>>(workers); 
         }
+
+
+       
     }
 }

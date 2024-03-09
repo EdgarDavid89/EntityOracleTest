@@ -9,10 +9,10 @@ namespace Parkings.Controllers
     [ApiController]
     public class WorkersController : ControllerBase
     {
-        private readonly IWorkerB<decimal> _workerB;
+        private readonly IWorkerB _workerB;
         private readonly ILogger<WorkersController> _logger;
 
-        public WorkersController(IWorkerB<decimal> workerB, 
+        public WorkersController(IWorkerB workerB, 
         ILogger<WorkersController> logger)
         {
             _workerB = workerB;

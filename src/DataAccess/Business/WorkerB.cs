@@ -5,18 +5,18 @@ using AutoMapper;
 
 namespace DataAccess.Business
 {   
-    public class WorkerB<TId>: IWorkerB<TId>
+    public class WorkerB: IWorkerB
     {
-      private readonly IRepository<Worker, TId> _workerRepository;
+      private readonly IRepository<Worker> _workerRepository;
       private readonly IMapper _mapper; 
-      public WorkerB(IRepository<Worker, TId> workerRepository,
+      public WorkerB(IRepository<Worker> workerRepository,
         IMapper mapper)
       {
         _workerRepository = workerRepository;
         _mapper = mapper;
       }
 
-      public async Task<WorkerDto> GetWorkerById(TId id)
+      public async Task<WorkerDto> GetWorkerById<TId>(TId id)
       {
         var worker = await _workerRepository.GetByIdAsync(id);
         return _mapper.Map<WorkerDto>(worker);   
@@ -36,14 +36,14 @@ namespace DataAccess.Business
         return _mapper.Map<WorkerDto>(createdWorker);   
       }
 
-      public async Task<WorkerDto> UpdateWorker(WorkerDto worker, TId id)
+      public async Task<WorkerDto> UpdateWorker<TId>(WorkerDto worker, TId id)
       {
         var workerUpdate = _mapper.Map<Worker>(worker);
         var updatedWorker = await _workerRepository.UpdateAsync(workerUpdate, id); 
         return _mapper.Map<WorkerDto>(updatedWorker);
       }
 
-      public async Task<WorkerDto> DeleteWorker(TId id)
+      public async Task<WorkerDto> DeleteWorker<TId>(TId id)
       {
         var deletedWorker = await _workerRepository.DeleteAsync(id);
         return _mapper.Map<WorkerDto>(deletedWorker);  

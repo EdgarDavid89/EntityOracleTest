@@ -1,15 +1,17 @@
 
 using System;
 using DataAccess.DTO;
+using DataAccess.Models;
 
 namespace DataAccess.Business
 {
-    public interface IParkingB<TId>
+    public interface IParkingB
     {
-        Task<ParkingDto> GetParkingById(TId id);
+        Task<ParkingDto> GetParkingById<TId>(TId id);
         Task<IEnumerable<ParkingDto>> GetParkings();
-        Task<ParkingDto> CreateParking(WorkerDto worker);
-        Task<ParkingDto> UpdateParking(WorkerDto worker, TId id);
-        Task<ParkingDto> DeleteParking(TId id);
+        Task<ParkingDto> CreateParking(ParkingDto parking);
+        Task<ParkingDto> UpdateParking<TId>(ParkingDto parking, TId id);
+        Task<ParkingDto> DeleteParking<TId>(TId id);
+        Task<IEnumerable<WorkerDto>> GetWorkersByParking<TId>(TId id);
     }
 }

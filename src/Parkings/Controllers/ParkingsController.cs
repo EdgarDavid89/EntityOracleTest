@@ -1,10 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using DataAccess.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Runtime.CompilerServices;
 using DataAccess.Business;
 using DataAccess.DTO;
 
@@ -14,13 +8,10 @@ namespace Parkings.Controllers
     [ApiController]
     public class ParkingsController : ControllerBase
     {
-        private readonly ModelContext _context;
-        private readonly IParkingB<decimal> _parkingB;
+        private readonly IParkingB _parkingB;
 
-        public ParkingsController(ModelContext context,
-        IParkingB<decimal> parkingB)
+        public ParkingsController(IParkingB parkingB)
         {
-            _context = context;
             _parkingB = parkingB;
         }
 
@@ -53,67 +44,41 @@ namespace Parkings.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Parking>> CreateParking(Parking parking)
+        public async Task<ActionResult> CreateParking(ParkingDto parking)
         {
-            _context.Parkings.Add(parking);
-            await _context.SaveChangesAsync();
+            var parkingEntity = await _parkingB.CreateParking(parking);
 
             return CreatedAtAction(nameof(GetParking), new { id = parking.Id }, parking);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateParking(decimal id, Parking parking)
-        {
-            if (id != parking.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(parking).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ParkingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
+        
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteParking(decimal id)
-        {
-            var parking = await _context.Parkings.FindAsync(id);
-
-            if (parking == null)
+        { 
+            try
             {
-                return NotFound();
+                var parking = await _parkingB.DeleteParking(id);
             }
-
-            _context.Parkings.Remove(parking);
-            await _context.SaveChangesAsync();
-
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+ 
             return NoContent();
         }
         
         [HttpGet("{parkingId}/workers")]
-        public async Task<ActionResult> GetWorkeByParking(decimal? parkingId)
+        public async Task<ActionResult> GetWorkeByParking(decimal parkingId)
         {
             try
             {
-                var workers = await _context.Workers.Where(x => x.Parkingid == parkingId).ToListAsync();
+                if(parkingId <= 0)
+                    return BadRequest("Invalid parking id");
 
-                if(workers == null)
+                var workers = await _parkingB.GetWorkersByParking(parkingId);
+
+                if (workers == null)
                     return NotFound();
 
                 return Ok(workers);
@@ -123,13 +88,24 @@ namespace Parkings.Controllers
                 return BadRequest(ex.Message);
             }
         }
-
-
-
-        private bool ParkingExists(decimal id)
-        {
-            return _context.Parkings.Any(e => e.Id == id);
-        }
         
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateParking(decimal id, ParkingDto parking)
+        {
+            if (id != parking.Id)
+            {
+                return BadRequest();
+            }
+            try
+            {
+                var result = await _parkingB.UpdateParking(parking, id);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+            return NoContent();
+        }
     }
 }
