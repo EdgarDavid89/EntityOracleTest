@@ -3,18 +3,15 @@ using System.Collections.Generic;
 
 namespace DataAccess.Models
 {
-    public partial class User
+    public partial class Resource
     {
-        public User()
+        public Resource()
         {
             Userresources = new HashSet<Userresource>();
         }
 
         public decimal Id { get; set; }
-        public string Username { get; set; } = null!;
-        public string Password { get; set; } = null!;
-        public string? Email { get; set; }
-        public string? Usertype { get; set; }
+        public string Name { get; set; } = null!;
         public DateTime? Datecreated { get; set; }
         public DateTime? Dateupdated { get; set; }
 

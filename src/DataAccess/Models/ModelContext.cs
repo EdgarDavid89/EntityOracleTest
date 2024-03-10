@@ -17,18 +17,10 @@ namespace DataAccess.Models
         }
 
         public virtual DbSet<Parking> Parkings { get; set; } = null!;
+        public virtual DbSet<Resource> Resources { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
-        public virtual DbSet<Userstype> Userstypes { get; set; } = null!;
+        public virtual DbSet<Userresource> Userresources { get; set; } = null!;
         public virtual DbSet<Worker> Workers { get; set; } = null!;
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-                optionsBuilder.UseOracle("User Id=ejemplo_ef_core;Password=123456;Data Source=localhost:1521/XE;");
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -60,6 +52,29 @@ namespace DataAccess.Models
                 entity.Property(e => e.Numberspace)
                     .HasColumnType("NUMBER(38)")
                     .HasColumnName("NUMBERSPACE");
+            });
+
+            modelBuilder.Entity<Resource>(entity =>
+            {
+                entity.ToTable("RESOURCES");
+
+                entity.Property(e => e.Id)
+                    .HasColumnType("NUMBER")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnName("ID");
+
+                entity.Property(e => e.Datecreated)
+                    .HasColumnType("DATE")
+                    .HasColumnName("DATECREATED");
+
+                entity.Property(e => e.Dateupdated)
+                    .HasColumnType("DATE")
+                    .HasColumnName("DATEUPDATED");
+
+                entity.Property(e => e.Name)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("NAME");
             });
 
             modelBuilder.Entity<User>(entity =>
@@ -94,25 +109,36 @@ namespace DataAccess.Models
                     .IsUnicode(false)
                     .HasColumnName("USERNAME");
 
-                entity.Property(e => e.Usertypeid)
-                    .HasColumnType("NUMBER")
-                    .HasColumnName("USERTYPEID");
-
-                entity.HasOne(d => d.Usertype)
-                    .WithMany(p => p.Users)
-                    .HasForeignKey(d => d.Usertypeid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_USERTYPEID");
+                entity.Property(e => e.Usertype)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("USERTYPE");
             });
 
-            modelBuilder.Entity<Userstype>(entity =>
+            modelBuilder.Entity<Userresource>(entity =>
             {
-                entity.ToTable("USERSTYPE");
+                entity.ToTable("USERRESOURCE");
 
                 entity.Property(e => e.Id)
                     .HasColumnType("NUMBER")
                     .ValueGeneratedOnAdd()
                     .HasColumnName("ID");
+
+                entity.Property(e => e.Actcreate)
+                    .HasPrecision(1)
+                    .HasColumnName("ACTCREATE");
+
+                entity.Property(e => e.Actdelete)
+                    .HasPrecision(1)
+                    .HasColumnName("ACTDELETE");
+
+                entity.Property(e => e.Actread)
+                    .HasPrecision(1)
+                    .HasColumnName("ACTREAD");
+
+                entity.Property(e => e.Actupdate)
+                    .HasPrecision(1)
+                    .HasColumnName("ACTUPDATE");
 
                 entity.Property(e => e.Datecreated)
                     .HasColumnType("DATE")
@@ -122,15 +148,23 @@ namespace DataAccess.Models
                     .HasColumnType("DATE")
                     .HasColumnName("DATEUPDATED");
 
-                entity.Property(e => e.Endpoints)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("ENDPOINTS");
+                entity.Property(e => e.Resourceid)
+                    .HasColumnType("NUMBER")
+                    .HasColumnName("RESOURCEID");
 
-                entity.Property(e => e.Typeuser)
-                    .HasMaxLength(100)
-                    .IsUnicode(false)
-                    .HasColumnName("TYPEUSER");
+                entity.Property(e => e.Userid)
+                    .HasColumnType("NUMBER")
+                    .HasColumnName("USERID");
+
+                entity.HasOne(d => d.Resource)
+                    .WithMany(p => p.Userresources)
+                    .HasForeignKey(d => d.Resourceid)
+                    .HasConstraintName("FK_RESOURCEID");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Userresources)
+                    .HasForeignKey(d => d.Userid)
+                    .HasConstraintName("FK_USERID");
             });
 
             modelBuilder.Entity<Worker>(entity =>
@@ -166,13 +200,13 @@ namespace DataAccess.Models
                     .HasConstraintName("FK_PARKINGID");
             });
 
-            modelBuilder.HasSequence("CATEGORIA_SEQ");
-
             modelBuilder.HasSequence("PARKING_ID_SEQ");
 
-            modelBuilder.HasSequence("USERS_ID_SEQ");
+            modelBuilder.HasSequence("RESOURCES_ID_SEQ");
 
-            modelBuilder.HasSequence("USERSTYPE_ID_SEQ");
+            modelBuilder.HasSequence("USERRESOURCE_ID_SEQ");
+
+            modelBuilder.HasSequence("USERS_ID_SEQ");
 
             modelBuilder.HasSequence("WORKERS_ID_SEQ");
 
