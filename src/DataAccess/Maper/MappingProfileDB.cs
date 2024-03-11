@@ -10,6 +10,8 @@ namespace DataAccess.Maper
         {
             CreateMap<Worker, WorkerDto>().ReverseMap();
             CreateMap<Parking, ParkingDto>().ReverseMap();
+            CreateMap<Resource, ResourceDto>().ReverseMap();
+            CreateMap<User, UserDto>().ReverseMap();
         }
     }
 }
