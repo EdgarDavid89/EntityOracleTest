@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using DataAccess.Business;
 using DataAccess.DTO;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Parkings.Controllers
 {
@@ -16,7 +17,7 @@ namespace Parkings.Controllers
             _parkingB = parkingB;
         }
 
-
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ParkingDto>>> GetParkings()
         {
