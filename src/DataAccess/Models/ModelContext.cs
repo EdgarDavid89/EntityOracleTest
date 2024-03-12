@@ -22,6 +22,7 @@ namespace DataAccess.Models
         public virtual DbSet<Userresource> Userresources { get; set; } = null!;
         public virtual DbSet<Worker> Workers { get; set; } = null!;
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasDefaultSchema("EJEMPLO_EF_CORE");
@@ -100,7 +101,7 @@ namespace DataAccess.Models
                     .HasColumnName("EMAIL");
 
                 entity.Property(e => e.Password)
-                    .HasMaxLength(40)
+                    .HasMaxLength(255)
                     .IsUnicode(false)
                     .HasColumnName("PASSWORD");
 

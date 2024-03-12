@@ -21,6 +21,8 @@ namespace DataAccess.Business
         public async Task<UserDto> CreateUser(UserDto user)
         {
             user.Id = user.Id > 0 || user.Id < 0  ? 0: user.Id;
+            user.DateCreated = DateTime.Now;
+            user.DateUpdated = DateTime.Now;
             var userEntity = _mapper.Map<User>(user);
             var newParking = await _userRepository.InsertAsync(userEntity);
             return _mapper.Map<UserDto>(newParking);
@@ -47,8 +49,15 @@ namespace DataAccess.Business
         public async Task<UserDto> UpdateUser<TId>(UserDto user, TId id)
         {
             var userUpdate = _mapper.Map<User>(user);
+            userUpdate.Dateupdated = DateTime.Now;     
             var updateUser = await _userRepository.UpdateAsync(userUpdate, id);
             return _mapper.Map<UserDto>(updateUser);
+        }
+
+        public async Task<UserDto> GetUserByUserName(string userName)
+        {
+            var updateUser = await _userRepository.GetByFilterAsync(u => u.Username == userName);
+            return _mapper.Map<UserDto>(updateUser.FirstOrDefault());
         }
         
     }

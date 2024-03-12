@@ -7,9 +7,9 @@ namespace Parkings.Models
     public class AccessRequest
     {
         [Required]
-        public string? User { get; set; }
+        public string User { get; set; } = null!;
 
         [Required]
-        public string? Password { get; set; }      
+        public string Password { get; set; } = null!;      
     }
 }

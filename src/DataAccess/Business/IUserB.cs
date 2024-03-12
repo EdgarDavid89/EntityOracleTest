@@ -10,5 +10,6 @@ namespace DataAccess.Business
         Task<UserDto> CreateUser(UserDto worker);
         Task<UserDto> UpdateUser<TId>(UserDto worker, TId id);
         Task<UserDto> DeleteUser<TId>(TId id);
+        Task<UserDto> GetUserByUserName(string userName);
     }
 }
